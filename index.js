@@ -1,12 +1,12 @@
 const express = require('express')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app =express()
 const cors =require('cors')
 require('dotenv').config()
 const port = process.env.port || 5000
 //middleware
 app.use(cors({
-  origin:['http://localhost:5174','http://localhost:5173'],
+  origin:['http://localhost:5174','http://localhost:5175'],
   credentials:true
 }))
 app.use(express.json())
@@ -50,6 +50,12 @@ async function run() {
     app.post("/all-books",async(req,res)=>{
       const book =req.body
       const result =await bookCollection.insertOne(book)
+      res.send(result)
+    })
+    app.get('/all-books/:id',async(req,res)=>{
+      const id = req.params.id
+      const query= {_id: new ObjectId(id)}
+      const result = await bookCollection.findOne(query)
       res.send(result)
     })
 
