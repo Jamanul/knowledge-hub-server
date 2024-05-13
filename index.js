@@ -40,9 +40,15 @@ async function run() {
     const database = client.db("knowledge-hub");
     const bannerCollection = database.collection("banner");
     const bookCollection =database.collection("book")
+    const subCategoryCollection =database.collection("subCategory")
     // Send a ping to confirm a successful connection
     app.get("/all-banner",async(req,res)=>{
       const cursor = bannerCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+    app.get("/all-category",async(req,res)=>{
+      const cursor = subCategoryCollection.find()
       const result = await cursor.toArray()
       res.send(result)
     })
