@@ -75,6 +75,17 @@ async function run() {
       const result = await bookCollection.findOne(query)
       res.send(result)
     })
+    app.patch('/all-books/:id',async(req,res)=>{
+      const id = req.params.id
+      //const quantity =req.body
+      //console.log(modifiedBook)
+      const query= {_id: new ObjectId(id)}
+      const updateDoc ={
+         $inc: { quantity: -1 } 
+      }
+      const result =await bookCollection.updateOne(query,updateDoc)
+      res.send(result)
+    })
 
     app.get("/all-books",async(req,res)=>{
       // const category = req.query?.category;
