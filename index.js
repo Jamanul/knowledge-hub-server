@@ -66,6 +66,19 @@ async function run() {
     })
 
     app.get("/all-books",async(req,res)=>{
+      // const category = req.query?.category;
+      console.log(req.query)
+      let query ={}
+      if(req.query?.category){
+        query ={category: req.query.category}
+      }
+      const cursor = bookCollection.find(query)
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+
+
+    app.get("/all-books",async(req,res)=>{
       const cursor =bookCollection.find()
       const result = await cursor.toArray()
       res.send(result)
