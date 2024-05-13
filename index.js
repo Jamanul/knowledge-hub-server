@@ -53,8 +53,19 @@ async function run() {
       const result =await borrowedBookCollection.insertOne(borrowedBook)
       res.send(result)
     })
+    app.delete('/all-borrowed-books/:id',async(req,res)=>{
+        const id =req.params.id
+        const query ={_id: new ObjectId(id)}
+        const result = await borrowedBookCollection.deleteOne(query)
+        res.send(result)
+    })
     app.get('/all-borrowed-books',async(req,res)=>{
-      const cursor =borrowedBookCollection.find()
+      console.log(req.query)
+      let query ={}
+      if(req.query?.email){
+        query= {email:req.query.email}
+      }
+      const cursor = borrowedBookCollection.find(query)
       const result =await cursor.toArray()
       res.send(result)
     })
@@ -75,13 +86,24 @@ async function run() {
       const result = await bookCollection.findOne(query)
       res.send(result)
     })
-    app.patch('/all-books/:id',async(req,res)=>{
+    app.patch('/all-returned-books/:id',async(req,res)=>{
       const id = req.params.id
       //const quantity =req.body
       //console.log(modifiedBook)
       const query= {_id: new ObjectId(id)}
       const updateDoc ={
          $inc: { quantity: -1 } 
+      }
+      const result =await bookCollection.updateOne(query,updateDoc)
+      res.send(result)
+    })
+    app.patch('/all-returned-books-test/:id',async(req,res)=>{
+      const book = req.body
+      console.log('quantity got increased',book)
+      console.log(req.body)
+      const query= {name: book.name}
+      const updateDoc ={
+         $inc: { quantity: 1 } 
       }
       const result =await bookCollection.updateOne(query,updateDoc)
       res.send(result)
