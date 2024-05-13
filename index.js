@@ -40,11 +40,22 @@ async function run() {
     const database = client.db("knowledge-hub");
     const bannerCollection = database.collection("banner");
     const bookCollection =database.collection("book")
+    const borrowedBookCollection =database.collection("borrowedBook")
     const subCategoryCollection =database.collection("subCategory")
     // Send a ping to confirm a successful connection
     app.get("/all-banner",async(req,res)=>{
       const cursor = bannerCollection.find()
       const result = await cursor.toArray()
+      res.send(result)
+    })
+    app.post("/all-borrowed-books",async(req,res)=>{
+      const borrowedBook =req.body
+      const result =await borrowedBookCollection.insertOne(borrowedBook)
+      res.send(result)
+    })
+    app.get('/all-borrowed-books',async(req,res)=>{
+      const cursor =borrowedBookCollection.find()
+      const result =await cursor.toArray()
       res.send(result)
     })
     app.get("/all-category",async(req,res)=>{
