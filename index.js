@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser')
 const port = process.env.port || 5000
 //middleware
 app.use(cors({
-  origin:['http://localhost:5174','http://localhost:5175'],
+  origin:['http://localhost:5174','http://localhost:5175','https://knowledge-hub-8809f.web.app'],
   credentials: true
 }))
 app.use(express.json())
@@ -71,7 +71,7 @@ async function run() {
 
     app.post('/jwt',async(req,res)=>{
       const user =req.body
-      console.log(user)
+      //console.log(user)
       const token =jwt.sign(user,process.env.USER_ACCESS_SECRET,{expiresIn:'1h'})
       res
       .cookie('token',token,cookieOptions)
@@ -94,10 +94,13 @@ async function run() {
     })
     app.post("/all-borrowed-books",async(req,res)=>{
       const borrowedBook =req.body
+      const query2 ={email: borrowedBook.email}
+      const result3 =await borrowedBookCollection.find(query2).toArray()
+      console.log("email count",result3.length)
       const query= {name: borrowedBook.name}
       const result2 =await borrowedBookCollection.find(query).toArray()
       console.log(result2.length)
-      if(result2.length>0){
+      if(result3.length>0 && result2.length>0){
         return
       }
       else{
@@ -147,10 +150,15 @@ async function run() {
     app.patch('/all-returned-books/:id',async(req,res)=>{
       const id = req.params.id
       const borrowedBook =req.body
+
+      const query3 ={email: borrowedBook.email}
+      const result3 =await borrowedBookCollection.find(query3).toArray()
+      console.log("email count",result3.length)
+
       const query2= {name: borrowedBook.name}
       const result2 =await borrowedBookCollection.find(query2).toArray()
       console.log(result2.length)
-      if(result2.length>0){
+      if(result3.length>0 && result2.length>0){
         return res.send(result2)
       }
       //const quantity =req.body
