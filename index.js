@@ -45,6 +45,7 @@ async function run() {
     const bookCollection =database.collection("book")
     const borrowedBookCollection =database.collection("borrowedBook")
     const subCategoryCollection =database.collection("subCategory")
+    const newArrivalCollection =database.collection("newArrival")
 
 
 
@@ -92,6 +93,15 @@ async function run() {
       const result = await cursor.toArray()
       res.send(result)
     })
+    app.get("/new-arrival",async(req,res)=>{
+      const cursor = newArrivalCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+
+
+
+
     app.post("/all-borrowed-books",async(req,res)=>{
       const borrowedBook =req.body
       const query2 ={email: borrowedBook.email}
