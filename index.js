@@ -4,6 +4,7 @@ const app =express()
 const cors =require('cors')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
+const stripe =require('stripe')(process.env.STRIPE_SECRET_KEY)
 const cookieParser = require('cookie-parser')
 const port = process.env.port || 5000
 //middleware
@@ -46,6 +47,7 @@ async function run() {
     const borrowedBookCollection =database.collection("borrowedBook")
     const subCategoryCollection =database.collection("subCategory")
     const newArrivalCollection =database.collection("newArrival")
+    const paymentCollection =database.collection("payment")
 
 
 
@@ -237,6 +239,30 @@ async function run() {
       };
       const result =await bookCollection.updateOne(query,updateDoc,options)
       res.send(result)
+    })
+
+
+    app.post('/create-payment-intent',async(req,res)=>{
+      const {price}=req.body
+      const amount = parseInt(price * 100)
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'usd',
+        payment_method_types: ['card']
+      })
+      res.send({
+        clientSecret: paymentIntent.client_secret
+      })
+    })
+    app.post('/payments',async (req,res)=>{
+      const payments =req.body
+      const paymentResult = await paymentCollection.insertOne(payments)
+      const query = {_id:{
+        $in : payments.bookId.map(id=> new ObjectId(id))
+      }}
+      const deletes = await borrowedBookCollection.deleteMany(query)
+      res.send(paymentResult)
     })
     // await client.db("admin").command({ ping: 1 });
     // console.log("Pinged your deployment. You successfully connected to MongoDB!");
